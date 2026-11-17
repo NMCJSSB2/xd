@@ -1,0 +1,200 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+
+local NexusUI = CoreGui:WaitForChild("NexusUI")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "最小化Gui"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = CoreGui
+
+local rootFrame = Instance.new("Frame")
+rootFrame.Name = "RootFrame"
+rootFrame.Size = UDim2.new(1, 0, 1, 0)
+rootFrame.Position = UDim2.new(0, 0, 0, 0)
+rootFrame.BackgroundTransparency = 1
+rootFrame.Active = false
+rootFrame.ZIndex = 2000
+rootFrame.Parent = screenGui
+
+local mainButton = Instance.new("ImageButton")
+mainButton.Name = "MainButton"
+mainButton.AnchorPoint = Vector2.new(0, 0)
+mainButton.Position = UDim2.new(0.8, 0, 0.01, 0)
+mainButton.Size = UDim2.new(0, 35, 0, 35)
+mainButton.AutoButtonColor = false
+mainButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainButton.BorderSizePixel = 0
+mainButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+mainButton.Active = true
+mainButton.Image = ""
+mainButton.ClipsDescendants = false
+mainButton.ZIndex = 2001
+mainButton.Parent = rootFrame
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(1, 0)
+uiCorner.Parent = mainButton
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(50, 50, 50)
+uiStroke.LineJoinMode = Enum.LineJoinMode.Round
+uiStroke.Thickness = 2
+uiStroke.Transparency = 0
+uiStroke.Parent = mainButton
+
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Name = "IconLabel"
+imageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+imageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+imageLabel.Size = UDim2.new(0, 30, 0, 30)
+imageLabel.BackgroundTransparency = 1
+imageLabel.Active = false
+imageLabel.Image = "rbxthumb://type=Asset&id=135383850614618&w=420&h=420"
+imageLabel.ZIndex = 2002
+imageLabel.Parent = mainButton
+
+local uiGridLayout = Instance.new("UIGridLayout")
+uiGridLayout.CellSize = UDim2.new(0, 30, 0, 30)
+uiGridLayout.CellPadding = UDim2.new(0, 0, 0, 0)
+uiGridLayout.FillDirection = Enum.FillDirection.Horizontal
+uiGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+uiGridLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+uiGridLayout.Parent = imageLabel
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(187, 0, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(0, 164, 255)),
+})
+uiGradient.Rotation = 90
+uiGradient.Parent = imageLabel
+
+local isAlive = true
+
+local activeTouch = nil
+local activeInput = nil
+local pressStartPos = nil
+local didDrag = false
+local CLICK_THRESHOLD = 6
+
+local function getTouch(input)
+    local ok, t = pcall(function() return input.Touch end)
+    if ok then return t end
+    return nil
+end
+
+local function pointInIcon(p)
+    if not isAlive or not imageLabel or not imageLabel.Parent then return false end
+    local absPos = imageLabel.AbsolutePosition
+    local absSize = imageLabel.AbsoluteSize
+    return p.X >= absPos.X and p.X <= absPos.X + absSize.X
+       and p.Y >= absPos.Y and p.Y <= absPos.Y + absSize.Y
+end
+
+local function toggleNexusUI()
+    if NexusUI and NexusUI.Parent then
+        NexusUI.Enabled = not NexusUI.Enabled
+    end
+end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not isAlive then return end
+
+    local isTouch = input.UserInputType == Enum.UserInputType.Touch
+    local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
+    if not (isTouch or isMouse) then return end
+    if not input.Position then return end
+    if not pointInIcon(input.Position) then return end
+
+    activeInput = input
+    activeTouch = isTouch and getTouch(input) or nil
+    pressStartPos = Vector2.new(input.Position.X, input.Position.Y)
+    didDrag = false
+end)
+
+UIS.InputChanged:Connect(function(changed)
+    if not isAlive then return end
+    if not activeInput then return end
+
+    if activeTouch then
+        if changed.UserInputType ~= Enum.UserInputType.Touch then return end
+        local ct = getTouch(changed)
+        if ct ~= activeTouch then return end
+    else
+        if activeInput and activeInput.UserInputType == Enum.UserInputType.Touch then
+            if changed ~= activeInput then return end
+        else
+            if changed.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+        end
+    end
+
+    if pressStartPos and not didDrag then
+        local curPos = Vector2.new(changed.Position.X, changed.Position.Y)
+        if (curPos - pressStartPos).Magnitude > CLICK_THRESHOLD then
+            didDrag = true
+        end
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if not isAlive then return end
+    if not activeInput then return end
+
+    local isTouch = input.UserInputType == Enum.UserInputType.Touch
+    local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
+    if not (isTouch or isMouse) then return end
+
+    local shouldStop = false
+    if isTouch then
+        local t = getTouch(input)
+        if (t and t == activeTouch) or (not activeTouch and input == activeInput) then
+            shouldStop = true
+        end
+    else
+        shouldStop = true
+    end
+
+    if not shouldStop then return end
+
+    if not didDrag and input.Position and pointInIcon(input.Position) then
+        toggleNexusUI()
+    end
+
+    activeInput = nil
+    activeTouch = nil
+    pressStartPos = nil
+    didDrag = false
+end)
+
+local function cleanupButton()
+    if not isAlive then return end
+    isAlive = false
+    activeInput = nil
+    activeTouch = nil
+    if screenGui and screenGui.Parent then
+        screenGui:Destroy()
+    end
+    screenGui = nil
+    rootFrame = nil
+    mainButton = nil
+    imageLabel = nil
+end
+
+NexusUI.AncestryChanged:Connect(function(_, newParent)
+    if newParent ~= CoreGui then
+        cleanupButton()
+    end
+end)
+
+NexusUI.Destroying:Connect(function()
+    cleanupButton()
+end)
+
+if NexusUI.Parent ~= CoreGui then
+    cleanupButton()
+end
