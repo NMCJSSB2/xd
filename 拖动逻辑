@@ -1,0 +1,112 @@
+local CoreGui = game:GetService("CoreGui")
+local UIS = game:GetService("UserInputService")
+
+local NexusGui = CoreGui:WaitForChild("NexusUI")
+local MainFrame = NexusGui:WaitForChild("MainFrame")
+local TopBar = MainFrame:WaitForChild("TopBar")
+local TabBar = MainFrame:WaitForChild("TabBar")
+
+TopBar.Active = false
+TabBar.Active = true
+
+local dragging = false
+local dragOffset = nil
+local activeTouch = nil
+local activeInput = nil
+local dragConnection = nil
+
+local function getTouch(input)
+    local ok, t = pcall(function() return input.Touch end)
+    if ok then return t end
+    return nil
+end
+
+local function clampPosition(absX, absY)
+    local cam = workspace.CurrentCamera
+    local viewport = cam and cam.ViewportSize or Vector2.new(1920, 1080)
+    local absSize = MainFrame.AbsoluteSize
+    local minX = -absSize.X + 60
+    local maxX = viewport.X - 60
+    local minY = 0
+    local maxY = viewport.Y - 40
+    absX = math.clamp(absX, minX, maxX)
+    absY = math.clamp(absY, minY, maxY)
+    return UDim2.new(0, absX, 0, absY)
+end
+
+local function stopDragging()
+    dragging = false
+    dragOffset = nil
+    activeTouch = nil
+    activeInput = nil
+    if dragConnection then
+        dragConnection:Disconnect()
+        dragConnection = nil
+    end
+end
+
+local function pointInTopBar(p)
+    local absPos = TopBar.AbsolutePosition
+    local absSize = TopBar.AbsoluteSize
+    return p.X >= absPos.X and p.X <= absPos.X + absSize.X
+       and p.Y >= absPos.Y and p.Y <= absPos.Y + absSize.Y
+end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    local isTouch = input.UserInputType == Enum.UserInputType.Touch
+    local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
+    if not (isTouch or isMouse) then return end
+
+    if not input.Position then return end
+    if not pointInTopBar(input.Position) then return end
+
+    dragging = true
+    activeInput = input
+    activeTouch = isTouch and getTouch(input) or nil
+
+    dragOffset = Vector2.new(
+        input.Position.X - MainFrame.AbsolutePosition.X,
+        input.Position.Y - MainFrame.AbsolutePosition.Y
+    )
+
+    dragConnection = UIS.InputChanged:Connect(function(changed)
+        if not dragging then return end
+
+        if activeTouch then
+            -- 有 Touch 对象：只认同一个 Touch
+            if changed.UserInputType ~= Enum.UserInputType.Touch then return end
+            local ct = getTouch(changed)
+            if ct ~= activeTouch then return end
+        else
+            -- 没 Touch 对象：手机端就比对 InputObject 本身；鼠标端认 MouseMovement
+            if activeInput and activeInput.UserInputType == Enum.UserInputType.Touch then
+                if changed ~= activeInput then return end
+            else
+                if changed.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+            end
+        end
+
+        local newAbsX = changed.Position.X - dragOffset.X
+        local newAbsY = changed.Position.Y - dragOffset.Y
+        MainFrame.Position = clampPosition(newAbsX, newAbsY)
+    end)
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if not dragging then return end
+
+    local isTouch = input.UserInputType == Enum.UserInputType.Touch
+    local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
+    if not (isTouch or isMouse) then return end
+
+    if isTouch then
+        local t = getTouch(input)
+        if (t and t == activeTouch) or (not activeTouch and input == activeInput) then
+            stopDragging()
+        end
+    else
+        stopDragging()
+    end
+end)
