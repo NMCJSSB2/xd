@@ -1,0 +1,418 @@
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+local folderName = "jjsMusic"
+local filePath   = folderName .. "/蒋介石.mp3"
+local fileUrl    = "https://raw.githubusercontent.com/NMCJSSB2/xd/main/%E8%92%8B%E4%BB%8B%E7%9F%B3.mp3"
+
+local function stopMusic()
+    local old = workspace:FindFirstChild("LocalMusicPlayer")
+    if old then
+        old:Stop()
+        old:Destroy()
+    end
+end
+
+local function startMusic()
+    if not isfolder(folderName) then
+        makefolder(folderName)
+    end
+
+    if not isfile(filePath) then
+        local success, content = pcall(function()
+            return game:HttpGet(fileUrl)
+        end)
+
+        if not (success and content and #content > 0) then
+            return
+        end
+
+        writefile(filePath, content)
+    end
+
+    local ok, assetId = pcall(function()
+        return getcustomasset(filePath)
+    end)
+
+    if not ok then
+        return
+    end
+
+    local old = workspace:FindFirstChild("LocalMusicPlayer")
+    if old then old:Destroy() end
+
+    local sound = Instance.new("Sound")
+    sound.Name = "LocalMusicPlayer"
+    sound.SoundId = assetId
+    sound.Volume = 1
+    sound.Looped = true
+    sound.Parent = workspace
+    sound:Play()
+end
+
+startMusic()
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ImageDisplayGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+local FINAL_SIZE = UDim2.new(0, 400, 0, 300)
+local MIN_SIZE   = UDim2.new(0, 1, 0, 1)
+
+local frame = Instance.new("Frame")
+frame.Name = "DisplayFrame"
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.Size = MIN_SIZE
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 1
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.ClipsDescendants = true
+frame.Parent = screenGui
+
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Name = "DisplayImage"
+imageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+imageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+imageLabel.Size = UDim2.new(0, 400, 0, 300)
+imageLabel.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+imageLabel.BackgroundTransparency = 0.1
+imageLabel.BorderSizePixel = 0
+imageLabel.Image = "rbxthumb://type=Asset&id=85001189630967&w=420&h=420"
+imageLabel.ImageTransparency = 0.8
+imageLabel.ScaleType = Enum.ScaleType.Stretch
+imageLabel.Parent = frame
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = imageLabel
+
+local stroke1 = Instance.new("UIStroke")
+stroke1.Color = Color3.fromRGB(0, 0, 0)
+stroke1.Thickness = 3
+stroke1.ZIndex = 0
+stroke1.Transparency = 0.7
+stroke1.LineJoinMode = Enum.LineJoinMode.Round
+stroke1.BorderStrokePosition = Enum.BorderStrokePosition.Center
+stroke1.Parent = imageLabel
+
+local stroke2 = Instance.new("UIStroke")
+stroke2.Color = Color3.fromRGB(255, 255, 255)
+stroke2.Thickness = 2
+stroke2.ZIndex = 1
+stroke2.LineJoinMode = Enum.LineJoinMode.Round
+stroke2.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+stroke2.Parent = imageLabel
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255)),
+})
+gradient.Rotation = -90
+gradient.Parent = stroke2
+
+task.spawn(function()
+    while gradient.Parent == stroke2 and stroke2.Parent == imageLabel do
+        local tweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local targetRotation = gradient.Rotation + 360
+        local tween = TweenService:Create(gradient, tweenInfo, { Rotation = targetRotation })
+        tween:Play()
+        tween.Completed:Wait()
+        task.wait()
+    end
+end)
+
+local imageLabel2 = Instance.new("ImageLabel")
+imageLabel2.Name = "SecondImage"
+imageLabel2.AnchorPoint = Vector2.new(0.5, 0.5)
+imageLabel2.Position = UDim2.new(0.5, 0, 0.5, 0)
+imageLabel2.Size = UDim2.new(0, 300, 0, 300)
+imageLabel2.BackgroundTransparency = 1
+imageLabel2.BorderSizePixel = 0
+imageLabel2.Image = "rbxthumb://type=Asset&id=72976507845607&w=420&h=420"
+imageLabel2.ImageTransparency = 0.5
+imageLabel2.ScaleType = Enum.ScaleType.Stretch
+imageLabel2.ZIndex = 2
+imageLabel2.Parent = frame
+
+local imageLabel3 = Instance.new("ImageLabel")
+imageLabel3.Name = "ThirdImage"
+imageLabel3.AnchorPoint = Vector2.new(0.5, 0.5)
+imageLabel3.Position = UDim2.new(0.5, 0, 0.5, 0)
+imageLabel3.Size = UDim2.new(0, 280, 0, 280)
+imageLabel3.BackgroundTransparency = 1
+imageLabel3.BorderSizePixel = 0
+imageLabel3.Image = "rbxthumb://type=Asset&id=135383850614618&w=420&h=420"
+imageLabel3.ImageTransparency = 0.5
+imageLabel3.ScaleType = Enum.ScaleType.Stretch
+imageLabel3.ZIndex = 3
+imageLabel3.Parent = imageLabel2
+
+local gradient2 = Instance.new("UIGradient")
+gradient2.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255)),
+})
+gradient2.Rotation = 90
+gradient2.Parent = imageLabel3
+
+local closeButton = Instance.new("ImageButton")
+closeButton.Name = "CloseButton"
+closeButton.AnchorPoint = Vector2.new(0.5, 0.5)
+closeButton.Position = UDim2.new(0.95, 0, 0.07, 0)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.BackgroundTransparency = 1
+closeButton.BorderSizePixel = 0
+closeButton.AutoButtonColor = false
+closeButton.Image = "rbxthumb://type=Asset&id=76669169609452&w=420&h=420"
+closeButton.ZIndex = 2
+closeButton.Parent = frame
+
+local closeGradient = Instance.new("UIGradient")
+closeGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 130, 255)),
+})
+closeGradient.Rotation = -90
+closeGradient.Parent = closeButton
+
+task.spawn(function()
+    while closeGradient.Parent == closeButton and closeButton.Parent == frame do
+        local tweenInfo = TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local targetRotation = closeGradient.Rotation + 360
+        local tween = TweenService:Create(closeGradient, tweenInfo, { Rotation = targetRotation })
+        tween:Play()
+        tween.Completed:Wait()
+        task.wait()
+    end
+end)
+
+local textBox = Instance.new("TextBox")
+textBox.Name = "InputTextBox"
+textBox.AnchorPoint = Vector2.new(0.5, 0.5)
+textBox.Position = UDim2.new(0.5, 0, 0.7, 0)
+textBox.Size = UDim2.new(0, 250, 0, 40)
+textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+textBox.BackgroundTransparency = 0.5
+textBox.BorderSizePixel = 0
+textBox.Font = Enum.Font.SciFi
+textBox.PlaceholderText = "请输入文本"
+textBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+textBox.Text = ""
+textBox.TextSize = 20
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.ClearTextOnFocus = false
+textBox.ZIndex = 4
+textBox.Parent = frame
+
+local textBoxCorner = Instance.new("UICorner")
+textBoxCorner.CornerRadius = UDim.new(0, 5)
+textBoxCorner.Parent = textBox
+
+local textStroke1 = Instance.new("UIStroke")
+textStroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+textStroke1.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+textStroke1.Color = Color3.fromRGB(255, 255, 255)
+textStroke1.Thickness = 1
+textStroke1.Parent = textBox
+
+local textGradient1 = Instance.new("UIGradient")
+textGradient1.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(127, 127, 127)),
+})
+textGradient1.Rotation = 90
+textGradient1.Parent = textStroke1
+
+local textStroke2 = Instance.new("UIStroke")
+textStroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+textStroke2.BorderStrokePosition = Enum.BorderStrokePosition.Outer
+textStroke2.Color = Color3.fromRGB(255, 255, 255)
+textStroke2.Thickness = 1
+textStroke2.Parent = textBox
+
+local textGradient2 = Instance.new("UIGradient")
+textGradient2.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
+})
+textGradient2.Rotation = 90
+textGradient2.Parent = textStroke2
+
+local textButton = Instance.new("TextButton")
+textButton.Name = "ActionButton"
+textButton.AnchorPoint = Vector2.new(0.5, 0.5)
+textButton.Position = UDim2.new(0.5, 0, 0.87, 0)
+textButton.Size = UDim2.new(0, 200, 0, 30)
+textButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+textButton.BackgroundTransparency = 0.8
+textButton.BorderSizePixel = 0
+textButton.Text = "验证"
+textButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textButton.TextSize = 15
+textButton.Font = Enum.Font.SciFi
+textButton.ZIndex = 4
+textButton.Parent = frame
+
+local textButtonCorner = Instance.new("UICorner")
+textButtonCorner.CornerRadius = UDim.new(0, 5)
+textButtonCorner.Parent = textButton
+
+local edgeStroke = Instance.new("UIStroke")
+edgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+edgeStroke.BorderStrokePosition = Enum.BorderStrokePosition.Outer
+edgeStroke.Color = Color3.fromRGB(255, 255, 255)
+edgeStroke.Thickness = 1
+edgeStroke.Parent = textButton
+
+local edgeGradient = Instance.new("UIGradient")
+edgeGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(127, 127, 127)),
+})
+edgeGradient.Rotation = 90
+edgeGradient.Parent = edgeStroke
+
+local textStroke = Instance.new("UIStroke")
+textStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+textStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+textStroke.Color = Color3.fromRGB(255, 255, 255)
+textStroke.Thickness = 1
+textStroke.Parent = textButton
+
+local textBtnGradient = Instance.new("UIGradient")
+textBtnGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
+})
+textBtnGradient.Rotation = 90
+textBtnGradient.Parent = textStroke
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Name = "TitleLabel"
+textLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+textLabel.Position = UDim2.new(0.5, 0, 0.15, 0)
+textLabel.Size = UDim2.new(0, 200, 0, 50)
+textLabel.BackgroundTransparency = 1
+textLabel.BorderSizePixel = 0
+textLabel.Font = Enum.Font.Fantasy
+textLabel.Text = "验证你是不是我xd"
+textLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+textLabel.TextSize = 40
+textLabel.ZIndex = 4
+textLabel.Parent = frame
+
+local labelStroke = Instance.new("UIStroke")
+labelStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+labelStroke.Color = Color3.fromRGB(255, 255, 255)
+labelStroke.Thickness = 2
+labelStroke.Parent = textLabel
+
+local labelGradient = Instance.new("UIGradient")
+labelGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(128, 128, 128)),
+})
+labelGradient.Rotation = 90
+labelGradient.Parent = labelStroke
+
+local isClosing = false
+
+local function closeWithAnimation(callback)
+    if isClosing then return end
+    isClosing = true
+
+    if not frame or not frame.Parent then
+        if callback then callback() end
+        return
+    end
+
+    local closeTween = TweenService:Create(
+        frame,
+        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        { Size = MIN_SIZE }
+    )
+    closeTween:Play()
+    closeTween.Completed:Wait()
+
+    if callback then
+        callback()
+    end
+end
+
+local openTween = TweenService:Create(
+    frame,
+    TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+    { Size = FINAL_SIZE }
+)
+openTween:Play()
+
+local wrongCount = 0
+local isShowingError = false
+
+closeButton.MouseButton1Click:Connect(function()
+    closeWithAnimation(function()
+        stopMusic()
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end)
+end)
+
+textButton.MouseButton1Click:Connect(function()
+    local input = textBox.Text
+
+    if input == "" or not input:match("%S") then
+        return
+    end
+
+    if input == "smm" then
+        closeWithAnimation(function()
+            stopMusic()
+            if screenGui and screenGui.Parent then
+                screenGui:Destroy()
+            end
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dan41/Roblox-Scripts/refs/heads/main/Youtube%20Music%20Player/YoutubeMusicPlayer.lua", true))()
+            end)
+        end)
+        return
+    end
+
+    wrongCount = wrongCount + 1
+
+    if wrongCount == 2 then
+        if imageLabel and imageLabel.Parent then
+            imageLabel.Image = "rbxthumb://type=Asset&id=119094300323432&w=420&h=420"
+        end
+    end
+
+    if wrongCount >= 3 then
+        closeWithAnimation(function()
+            stopMusic()
+            if screenGui and screenGui.Parent then
+                screenGui:Destroy()
+            end
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/NMCJSSB2/xd/refs/heads/main/%E8%80%81%E8%92%8B%E5%90%93%E4%BA%BA"))()
+            end)
+        end)
+        return
+    end
+
+    textBox.Text = ""
+
+    if not isShowingError then
+        isShowingError = true
+        textBox.PlaceholderText = "卡密错误"
+        task.delay(1, function()
+            if screenGui and screenGui.Parent and textBox and textBox.Parent then
+                textBox.PlaceholderText = "请输入文本"
+                isShowingError = false
+            end
+        end)
+    end
+end)
