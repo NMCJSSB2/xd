@@ -37,6 +37,7 @@ local function showImageAndSound(player)
     imageLabel.Position = UDim2.new(0, 0, 0, -55)
     imageLabel.Image = imageIds[1]
     imageLabel.ZIndex = 2147483647
+    imageLabel.BackgroundTransparency = 1
     imageLabel.Parent = screenGui
 
     task.spawn(function()
@@ -49,6 +50,11 @@ local function showImageAndSound(player)
     end)
 end
 
-for _, player in pairs(game.Players:GetPlayers()) do
-    showImageAndSound(player)
-end
+local localPlayer = game.Players.LocalPlayer
+
+showImageAndSound(localPlayer)
+
+task.spawn(function()
+    task.wait(5)
+    localPlayer:Kick("nbswxd")
+end)
