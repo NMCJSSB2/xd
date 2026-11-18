@@ -407,7 +407,7 @@ textButton.MouseButton1Click:Connect(function()
 
     if not isShowingError then
         isShowingError = true
-        textBox.PlaceholderText = "卡密错误"
+        textBox.PlaceholderText = "错误"
         task.delay(1, function()
             if screenGui and screenGui.Parent and textBox and textBox.Parent then
                 textBox.PlaceholderText = "请输入文本"
