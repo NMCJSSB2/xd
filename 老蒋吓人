@@ -1,0 +1,54 @@
+local soundId = "rbxassetid://18286083489"
+
+local imageIds = {
+    "rbxassetid://80924129090671",
+    "rbxassetid://120707230995748"
+}
+local switchTime = 0.03
+local totalDuration = 10
+local numSwitches = math.floor(totalDuration / switchTime)
+
+local function showImageAndSound(player)
+    local coreGui = game:GetService("CoreGui")
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ImageDisplay"
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.DisplayOrder = 2147483647
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.Parent = coreGui
+
+    local sound = Instance.new("Sound")
+    sound.SoundId = soundId
+    sound.Volume = 100
+    sound.Parent = player
+    sound.PlaybackSpeed = 1
+    sound.Looped = true
+
+    sound:Play()
+
+    local distortion = Instance.new("DistortionSoundEffect")
+    distortion.Level = 1
+    distortion.Parent = sound
+
+    local imageLabel = Instance.new("ImageLabel")
+    imageLabel.Size = UDim2.new(1, 0, 1.10, 0)
+    imageLabel.Position = UDim2.new(0, 0, 0, -55)
+    imageLabel.Image = imageIds[1]
+    imageLabel.ZIndex = 2147483647
+    imageLabel.Parent = screenGui
+
+    task.spawn(function()
+        for i = 1, numSwitches do
+            imageLabel.Image = imageIds[(i % 2) + 1]
+            task.wait(switchTime)
+        end
+        screenGui:Destroy()
+        sound:Destroy()
+    end)
+end
+
+for _, player in pairs(game.Players:GetPlayers()) do
+    showImageAndSound(player)
+end
