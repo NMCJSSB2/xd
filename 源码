@@ -55,7 +55,6 @@ Section1:CreateButton({
     Description = "自动互动60格以内的",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E8%87%AA%E5%8A%A8%E4%BA%92%E5%8A%A8.txt"))()
-end)
     end,
 })
 
@@ -87,7 +86,8 @@ Section2:CreateButton({
     end,
 })
 
-Section2:CreateButton({
+local Section2a = Tab2:CreateSection({ Name = "其他" })
+Section2a:CreateButton({
     Name = "换挡锁",
     Description = "某些乐子游戏第三人称不让锁定用这个可以",
     Callback = function()
@@ -131,7 +131,7 @@ Section4:CreateButton({
 --  写脚本
 -- ─────────────────────────────────────────────────────────
 
-local Section4 = Tab5:CreateSection({ Name = "抓包远程" })
+local Section5 = Tab5:CreateSection({ Name = "抓包远程" })
 Section5:CreateButton({
     Name = "中文版Spy",
     Description = "中文版的但是容易被检测出来",
@@ -140,7 +140,7 @@ Section5:CreateButton({
     end,
 })
 
-Section4:CreateButton({
+Section5:CreateButton({
     Name = "SpyV3",
     Description = "英文版功能更强 不容易被检测出来",
     Callback = function()
