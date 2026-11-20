@@ -369,14 +369,14 @@ textButton.MouseButton1Click:Connect(function()
         return
     end
 
-    if input == "smm" then
+    if input == "ymm" then
         closeWithAnimation(function()
             stopMusic()
             if screenGui and screenGui.Parent then
                 screenGui:Destroy()
             end
             pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dan41/Roblox-Scripts/refs/heads/main/Youtube%20Music%20Player/YoutubeMusicPlayer.lua", true))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/NMCJSSB2/xd/refs/heads/main/wsmmw"))()
             end)
         end)
         return
