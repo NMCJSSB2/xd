@@ -66,7 +66,6 @@ Section1:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E8%87%AA%E5%8A%A8%E7%BF%BB%E8%AF%91'))()
     end,
 })
-
 -- ─────────────────────────────────────────────────────────
 --  辅助
 -- ─────────────────────────────────────────────────────────
@@ -95,7 +94,6 @@ Section2:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E6%8D%A2%E6%8C%A1%E9%94%81.lua'))()
     end,
 })
-
 -- ─────────────────────────────────────────────────────────
 --  娱乐
 -- ─────────────────────────────────────────────────────────
@@ -129,8 +127,6 @@ Section4:CreateButton({
         print("676778917866")
     end,
 })
-
-
 -- ─────────────────────────────────────────────────────────
 --  写脚本
 -- ─────────────────────────────────────────────────────────
@@ -151,7 +147,6 @@ Section4:CreateButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua', true))()
     end,
 })
-
 -- ─────────────────────────────────────────────────────────
 --  服务器专属
 -- ─────────────────────────────────────────────────────────
