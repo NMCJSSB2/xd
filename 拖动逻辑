@@ -6,12 +6,12 @@ local MainFrame = NexusGui:WaitForChild("MainFrame")
 local TopBar = MainFrame:WaitForChild("TopBar")
 local TabBar = MainFrame:WaitForChild("TabBar")
 
-TopBar.Active = false
+TopBar.Active = true
+TopBar.Draggable = false
 TabBar.Active = true
 
 local dragging = false
 local dragOffset = nil
-local activeTouch = nil
 local activeInput = nil
 local dragConnection = nil
 
@@ -21,23 +21,23 @@ local function getTouch(input)
     return nil
 end
 
+local function normalizePosition()
+    local abs = MainFrame.AbsolutePosition
+    MainFrame.Position = UDim2.new(0, abs.X, 0, abs.Y)
+end
+
 local function clampPosition(absX, absY)
     local cam = workspace.CurrentCamera
     local viewport = cam and cam.ViewportSize or Vector2.new(1920, 1080)
     local absSize = MainFrame.AbsoluteSize
-    local minX = -absSize.X + 60
-    local maxX = viewport.X - 60
-    local minY = 0
-    local maxY = viewport.Y - 40
-    absX = math.clamp(absX, minX, maxX)
-    absY = math.clamp(absY, minY, maxY)
+    absX = math.clamp(absX, 0, viewport.X - absSize.X)
+    absY = math.clamp(absY, 0, viewport.Y - absSize.Y)
     return UDim2.new(0, absX, 0, absY)
 end
 
 local function stopDragging()
     dragging = false
     dragOffset = nil
-    activeTouch = nil
     activeInput = nil
     if dragConnection then
         dragConnection:Disconnect()
@@ -45,27 +45,16 @@ local function stopDragging()
     end
 end
 
-local function pointInTopBar(p)
-    local absPos = TopBar.AbsolutePosition
-    local absSize = TopBar.AbsoluteSize
-    return p.X >= absPos.X and p.X <= absPos.X + absSize.X
-       and p.Y >= absPos.Y and p.Y <= absPos.Y + absSize.Y
-end
-
-UIS.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-
+TopBar.InputBegan:Connect(function(input)
     local isTouch = input.UserInputType == Enum.UserInputType.Touch
     local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
     if not (isTouch or isMouse) then return end
-
     if not input.Position then return end
-    if not pointInTopBar(input.Position) then return end
+
+    normalizePosition()
 
     dragging = true
     activeInput = input
-    activeTouch = isTouch and getTouch(input) or nil
-
     dragOffset = Vector2.new(
         input.Position.X - MainFrame.AbsolutePosition.X,
         input.Position.Y - MainFrame.AbsolutePosition.Y
@@ -74,23 +63,15 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     dragConnection = UIS.InputChanged:Connect(function(changed)
         if not dragging then return end
 
-        if activeTouch then
-            -- 有 Touch 对象：只认同一个 Touch
-            if changed.UserInputType ~= Enum.UserInputType.Touch then return end
-            local ct = getTouch(changed)
-            if ct ~= activeTouch then return end
-        else
-            -- 没 Touch 对象：手机端就比对 InputObject 本身；鼠标端认 MouseMovement
-            if activeInput and activeInput.UserInputType == Enum.UserInputType.Touch then
-                if changed ~= activeInput then return end
-            else
-                if changed.UserInputType ~= Enum.UserInputType.MouseMovement then return end
-            end
+        if changed ~= activeInput then
+            local ct, at = getTouch(changed), getTouch(activeInput)
+            if not (ct and at and ct == at) then return end
         end
 
-        local newAbsX = changed.Position.X - dragOffset.X
-        local newAbsY = changed.Position.Y - dragOffset.Y
-        MainFrame.Position = clampPosition(newAbsX, newAbsY)
+        MainFrame.Position = clampPosition(
+            changed.Position.X - dragOffset.X,
+            changed.Position.Y - dragOffset.Y
+        )
     end)
 end)
 
@@ -101,12 +82,13 @@ UIS.InputEnded:Connect(function(input)
     local isMouse = input.UserInputType == Enum.UserInputType.MouseButton1
     if not (isTouch or isMouse) then return end
 
-    if isTouch then
-        local t = getTouch(input)
-        if (t and t == activeTouch) or (not activeTouch and input == activeInput) then
-            stopDragging()
-        end
-    else
+    local ended = (input == activeInput)
+    if not ended then
+        local ct, at = getTouch(input), getTouch(activeInput)
+        if ct and at and ct == at then ended = true end
+    end
+
+    if ended then
         stopDragging()
     end
 end)
