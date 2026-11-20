@@ -19,40 +19,51 @@ local Window = NexusUI:CreateWindow({
     Size = UDim2.new(0, 500, 0, 350),
 })
 
-local Tab1 = Window:CreateTab({ Name = "选项卡一", Icon = "rbxassetid://10723415903" })
-local Tab2 = Window:CreateTab({ Name = "选项卡二", Icon = "rbxassetid://10734950020" })
-local Tab3 = Window:CreateTab({ Name = "选项卡三", Icon = "rbxassetid://10734950020" })
-local Tab4 = Window:CreateTab({ Name = "选项卡四", Icon = "rbxassetid://10734950020" })
+local Tab1 = Window:CreateTab({ Name = "实用", Icon = "rbxassetid://10723415903" })
+local Tab2 = Window:CreateTab({ Name = "辅助", Icon = "rbxassetid://10734950020" })
+local Tab3 = Window:CreateTab({ Name = "娱乐", Icon = "rbxassetid://10734950020" })
+local Tab4 = Window:CreateTab({ Name = "搞人", Icon = "rbxassetid://10734950020" })
+local Tab5 = Window:CreateTab({ Name = "写脚本", Icon = "rbxassetid://10734950020" })
+local Tab6 = Window:CreateTab({ Name = "服务器专属", Icon = "rbxassetid://10734950020" })
 
 -- ─────────────────────────────────────────────────────────
 --  实用
 -- ─────────────────────────────────────────────────────────
 
-local Section1 = Tab1:CreateSection({ Name = "功能区" })
+local Section1 = Tab1:CreateSection({ Name = "通用" })
 
 Section1:CreateButton({
-    Name = "加载 SimpleSpy V3",
-    Description = "点击加载 SimpleSpy V3",
+    Name = "VapeV4",
+    Description = "方块小人脚本非常好用",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua", true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", true))()
     end,
 })
 
 Section1:CreateButton({
-    Name = "加载 Sspy",
-    Description = "点击加载 Sspy",
+    Name = "快速互动",
+    Description = "字面意思有些服务器不管用",
     Callback = function()
-        loadstring(game:HttpGet("https://github.com/czp86263-del/sspy/releases/download/sspy/Sspy.lua"))()
+        game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+  fireproximityprompt(prompt)
+end)
     end,
 })
 
-local Section1B = Tab1:CreateSection({ Name = "音乐" })
-
-Section1B:CreateButton({
-    Name = "加载 YouTube 音乐播放器",
-    Description = "点击加载 YouTube Music Player",
+Section1:CreateButton({
+    Name = "自动互动",
+    Description = "自动互动60格以内的",
     Callback = function()
-        loadstring(game:HttpGet(('https://raw.githubusercontent.com/Dan41/Roblox-Scripts/refs/heads/main/Youtube%20Music%20Player/YoutubeMusicPlayer.lua'), true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E8%87%AA%E5%8A%A8%E4%BA%92%E5%8A%A8.txt"))()
+end)
+    end,
+})
+
+Section1:CreateButton({
+    Name = "自动翻译",
+    Description = "自动翻译游戏内的英文，需要一些时间",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E8%87%AA%E5%8A%A8%E7%BF%BB%E8%AF%91'))()
     end,
 })
 
@@ -60,12 +71,28 @@ Section1B:CreateButton({
 --  辅助
 -- ─────────────────────────────────────────────────────────
 
-local Section2 = Tab2:CreateSection({ Name = "功能区" })
+local Section2 = Tab2:CreateSection({ Name = "自瞄" })
 Section2:CreateButton({
-    Name = "按钮二",
-    Description = "点击执行功能二",
+    Name = "战场自瞄",
+    Description = "战场游戏大部分可用",
     Callback = function()
-        print("按钮二被点击了！")
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E6%88%98%E5%9C%BA%E8%87%AA%E7%9E%84.lua'))()
+    end,
+})
+
+Section2:CreateButton({
+    Name = "自瞄",
+    Description = "纯自瞄可设置",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/pid4k/scripts/main/universalaimbot.lua', true))()
+    end,
+})
+
+Section2:CreateButton({
+    Name = "换挡锁",
+    Description = "某些乐子游戏第三人称不让锁定用这个可以",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/%E6%8D%A2%E6%8C%A1%E9%94%81.lua'))()
     end,
 })
 
@@ -73,35 +100,67 @@ Section2:CreateButton({
 --  娱乐
 -- ─────────────────────────────────────────────────────────
 
-local Section3 = Tab3:CreateSection({ Name = "功能区" })
+local Section3 = Tab3:CreateSection({ Name = "娱乐" })
 Section3:CreateButton({
-    Name = "按钮三",
-    Description = "点击执行功能三",
+    Name = "改动画包",
+    Description = "可以免费用R15的动画包",
     Callback = function()
-        print("按钮三被点击了！")
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/randomstring0/load/refs/heads/main/rcloader"))()
+--[[universal rochips panel remake ]] --
     end,
 })
 
+Section3:CreateButton({
+    Name = "改动画速度",
+    Description = "改自己动画的速度",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/NMCJSSB2/114514/refs/heads/main/action%20control.lua'))()
+    end,
+})
 -- ─────────────────────────────────────────────────────────
 --  搞人
 -- ─────────────────────────────────────────────────────────
 
-local Section4 = Tab4:CreateSection({ Name = "功能区" })
+local Section4 = Tab4:CreateSection({ Name = "滚木" })
 Section4:CreateButton({
-    Name = "按钮四",
-    Description = "点击执行功能四",
+    Name = "滚木",
+    Description = "滚木",
     Callback = function()
-        print("按钮四被点击了！")
+        print("676778917866")
     end,
 })
+
 
 -- ─────────────────────────────────────────────────────────
 --  写脚本
 -- ─────────────────────────────────────────────────────────
 
-local Section5 = Tab5:CreateSection({ Name = "功能区" })
+local Section4 = Tab5:CreateSection({ Name = "抓包远程" })
+Section5:CreateButton({
+    Name = "中文版Spy",
+    Description = "中文版的但是容易被检测出来",
+    Callback = function()
+        loadstring(game:HttpGet("https://github.com/czp86263-del/sspy/releases/download/sspy/Sspy.lua"))()
+    end,
+})
+
+Section4:CreateButton({
+    Name = "SpyV3",
+    Description = "英文版功能更强 不容易被检测出来",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua', true))()
+    end,
+})
+
 -- ─────────────────────────────────────────────────────────
 --  服务器专属
 -- ─────────────────────────────────────────────────────────
 
-local Section6 = Tab6:CreateSection({ Name = "功能区" })
+local Section6 = Tab6:CreateSection({ Name = "滚木" })
+Section6:CreateButton({
+    Name = "滚木",
+    Description = "滚木",
+    Callback = function()
+        print("滚木")
+    end,
+})
