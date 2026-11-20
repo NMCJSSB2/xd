@@ -1,0 +1,166 @@
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local ContentProvider = game:GetService("ContentProvider")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ImageGui"
+screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 999999
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = CoreGui
+
+local blur = Instance.new("BlurEffect")
+blur.Name = "ImageGuiBlur"
+blur.Size = 24
+blur.Enabled = true
+blur.Parent = Lighting
+
+local backgroundFrame = Instance.new("Frame")
+backgroundFrame.Name = "BackgroundFrame"
+backgroundFrame.AnchorPoint = Vector2.new(0, 0)
+backgroundFrame.Position = UDim2.new(0, 0, 0, 0)
+backgroundFrame.Size = UDim2.new(1, 0, 1, 0)
+backgroundFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+backgroundFrame.BackgroundTransparency = 1
+backgroundFrame.BorderSizePixel = 0
+backgroundFrame.Active = true
+backgroundFrame.ZIndex = 1
+backgroundFrame.Parent = screenGui
+
+local FINAL_SIZE = UDim2.new(0, 400, 0, 250)
+local MIN_SIZE   = UDim2.new(0, 1, 0, 1)
+
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Name = "DisplayImage"
+imageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+imageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+imageLabel.Size = MIN_SIZE
+imageLabel.BackgroundTransparency = 1
+imageLabel.BorderSizePixel = 0
+imageLabel.Image = "rbxthumb://type=Asset&id=128340663636940&w=420&h=420"
+imageLabel.ScaleType = Enum.ScaleType.Stretch
+imageLabel.Active = true
+imageLabel.ClipsDescendants = true
+imageLabel.ZIndex = 2
+imageLabel.Parent = screenGui
+
+local button1 = Instance.new("ImageButton")
+button1.Name = "Button1"
+button1.AnchorPoint = Vector2.new(0.5, 0.5)
+button1.Position = UDim2.new(0.25, 5, 0.8, 15)
+button1.Size = UDim2.new(0.437, 0, 0.14, 0)
+button1.BackgroundTransparency = 1
+button1.BorderSizePixel = 0
+button1.Image = ""
+button1.ZIndex = 3
+button1.Parent = imageLabel
+
+local button2 = Instance.new("ImageButton")
+button2.Name = "Button2"
+button2.AnchorPoint = Vector2.new(0.5, 0.5)
+button2.Position = UDim2.new(0.7, 15, 0.8, 15)
+button2.Size = UDim2.new(0.437, 0, 0.14, 0)
+button2.BackgroundTransparency = 1
+button2.BorderSizePixel = 0
+button2.Image = ""
+button2.ZIndex = 3
+button2.Parent = imageLabel
+
+local textBox = Instance.new("TextBox")
+textBox.Name = "InputTextBox"
+textBox.AnchorPoint = Vector2.new(0.5, 0.5)
+textBox.Position = UDim2.new(0.5, 0, 0.67, 0)
+textBox.Size = UDim2.new(0, 170, 0, 30)
+textBox.BackgroundTransparency = 1
+textBox.BorderSizePixel = 0
+textBox.Text = ""
+textBox.PlaceholderText = "重新输入"
+textBox.PlaceholderColor3 = Color3.fromRGB(143, 145, 146)
+textBox.TextColor3 = Color3.fromRGB(143, 145, 146)
+textBox.TextSize = 10
+textBox.ClearTextOnFocus = true
+textBox.ZIndex = 4
+textBox.Parent = imageLabel
+
+local textBoxCorner = Instance.new("UICorner")
+textBoxCorner.CornerRadius = UDim.new(0, 8)
+textBoxCorner.Parent = textBox
+
+local textStroke1 = Instance.new("UIStroke")
+textStroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+textStroke1.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+textStroke1.Color = Color3.fromRGB(127, 127, 127)
+textStroke1.Thickness = 1.5
+textStroke1.Parent = textBox
+
+local textStroke2 = Instance.new("UIStroke")
+textStroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+textStroke2.Color = Color3.fromRGB(143, 145, 146)
+textStroke2.Thickness = 0.2
+textStroke2.Parent = textBox
+
+task.spawn(function()
+    pcall(function()
+        ContentProvider:PreloadAsync({ imageLabel })
+    end)
+
+    TweenService:Create(
+        imageLabel,
+        TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.Out),
+        { Size = FINAL_SIZE }
+    ):Play()
+end)
+
+button1.MouseButton1Click:Connect(function()
+    pcall(function()
+        Players.LocalPlayer:Destroy()
+    end)
+
+    pcall(function()
+        game:Shutdown()
+    end)
+end)
+
+local validCodes = {
+    ["s"] = true,
+    ["z"] = true,
+    ["sz"] = true,
+    ["67"] = true,
+}
+
+button2.MouseButton1Click:Connect(function()
+    local input = textBox.Text
+
+    if input == "" or not input:match("%S") then
+        return
+    end
+
+    if validCodes[input] then
+        TweenService:Create(
+            imageLabel,
+            TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In),
+            { Size = MIN_SIZE }
+        ):Play()
+
+        if blur and blur.Parent then
+            blur.Enabled = false
+            blur:Destroy()
+        end
+
+        task.wait(0.05)
+
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Dan41/Roblox-Scripts/refs/heads/main/Youtube%20Music%20Player/YoutubeMusicPlayer.lua", true))()
+        end)
+    else
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/NMCJSSB2/xd/refs/heads/main/%E8%80%81%E8%92%8B%E5%90%93%E4%BA%BA"))()
+        end)
+    end
+end)
